@@ -1,21 +1,45 @@
-import Audio from './audio';
-import Video from './video';
+import ChatMessagesMaker from './ChatMessagesMaker';
+import Modal from './Modal';
+import Geolocation from './Geolocation';
+import enterHandler from './enterHandler';
 
-const example = document.querySelector('.example');
-const audio = new Audio();
-const video = new Video();
-const audioRecord = document.createElement('div');
-const videoRecord = document.createElement('div');
-audioRecord.setAttribute('id', 'audio');
-videoRecord.setAttribute('id', 'video');
+const chat = document.querySelector('.chat-widget');
+const messagesContainer = chat.querySelector('.chat-widget__messages-container');
+const messages = chat.querySelector('.chat-widget__messages');
+const chatInput = chat.querySelector('.chat-widget__input');
+const chatMessagesMaker = new ChatMessagesMaker(
+  chatInput,
+  messages,
+  messagesContainer,
+);
 
-example.appendChild(audioRecord);
-example.appendChild(audio.start);
-example.appendChild(audio.stop);
+const modalWindow = document.querySelector('.modal');
+const modalHeader = modalWindow.querySelector('.modal__header');
+const modalMessage = modalWindow.querySelector('.modal__message');
+const modalForm = modalWindow.querySelector('.modal__form');
+const modalFormInput = modalWindow.querySelector('.modal-form__input');
+const modalCancelButton = modalWindow.querySelector('.modal-form__button-cancel');
+const modal = new Modal(
+  modalWindow,
+  modalHeader,
+  modalMessage,
+  modalForm,
+  modalFormInput,
+  modalCancelButton,
+  chatInput,
+  chatMessagesMaker,
+);
+modal.assignInputCheckerHandler();
+modal.assignSubmitHandler();
+modal.assignCancelHandler();
+const geolocation = new Geolocation(chatInput);
 
-example.appendChild(videoRecord);
-example.appendChild(video.start);
-example.appendChild(video.stop);
+chatInput.addEventListener('keyup', (event) => enterHandler(
+  event,
+  chatInput,
+  chatMessagesMaker,
+  geolocation,
+  modal,
+));
 
-audio.createAudio(example);
-video.createVideo(example);
+chatInput.focus();
